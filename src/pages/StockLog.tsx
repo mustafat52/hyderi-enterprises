@@ -6,6 +6,7 @@ import { timeAgo } from '../utils/format'
 const filters: { key: LogMethod | 'all'; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'sync', label: 'Tally sync' },
+  { key: 'cash-sale', label: 'Cash bills' },
   { key: 'transfer', label: 'Transfers' },
   { key: 'adjustment', label: 'Adjustments' },
   { key: 'new-item', label: 'New items' },
@@ -16,18 +17,21 @@ const methodColor: Record<LogMethod, string> = {
   transfer: '#3C5D78',
   adjustment: 'var(--marigold)',
   'new-item': 'var(--teal)',
+  'cash-sale': 'var(--barn)',
 }
 const methodLabel: Record<LogMethod, string> = {
   sync: 'Tally sync',
   transfer: 'Transfer',
   adjustment: 'Adjustment',
   'new-item': 'New item',
+  'cash-sale': 'Cash bill',
 }
 const methodBg: Record<LogMethod, string> = {
   sync: 'rgba(85,112,63,0.12)',
   transfer: 'rgba(60,93,120,0.12)',
   adjustment: 'rgba(185,122,28,0.15)',
   'new-item': 'rgba(31,92,88,0.12)',
+  'cash-sale': 'rgba(153,55,42,0.12)',
 }
 
 export default function StockLog() {

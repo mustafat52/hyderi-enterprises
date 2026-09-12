@@ -78,7 +78,7 @@ export default function Dashboard() {
           <h3 className="text-[14.5px] mb-3.5">Recent activity</h3>
           {log.slice(0, 6).map(e => (
             <div key={e.id} className="log-row">
-              <div className="log-dot" style={{ background: e.method === 'sync' ? 'var(--sage)' : e.method === 'transfer' ? '#3C5D78' : e.method === 'adjustment' ? 'var(--marigold)' : 'var(--teal)' }} />
+              <div className="log-dot" style={{ background: e.method === 'sync' ? 'var(--sage)' : e.method === 'transfer' ? '#3C5D78' : e.method === 'adjustment' ? 'var(--marigold)' : e.method === 'cash-sale' ? 'var(--barn)' : 'var(--teal)' }} />
               <div className="flex-1 min-w-0">
                 <p className="text-[12.5px]">{e.description}</p>
                 <p className="text-[10.5px] font-mono mt-0.5" style={{ color: 'var(--ink-faint)' }}>{timeAgo(e.ts)}</p>

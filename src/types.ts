@@ -4,6 +4,7 @@ export interface Variant {
   shop: number
   godown: number
   price: number // purchase price per unit
+  sellingPrice: number // selling price per unit (for cash/no-bill sales)
   limit: number // reorder limit
 }
 
@@ -29,7 +30,7 @@ export interface Category {
   brands: Brand[]
 }
 
-export type LogMethod = 'sync' | 'transfer' | 'adjustment' | 'new-item'
+export type LogMethod = 'sync' | 'transfer' | 'adjustment' | 'new-item' | 'cash-sale'
 
 export interface LogEntry {
   id: string
@@ -45,4 +46,24 @@ export interface VariantRef {
   brandId: string
   productId: string
   variantId: string
+}
+
+export interface BillLineItem {
+  variantId: string
+  categoryId: string
+  brandId: string
+  productId: string
+  label: string
+  qty: number
+  price: number
+  lineTotal: number
+}
+
+export interface Bill {
+  id: string
+  billNo: string
+  ts: number
+  customerName: string
+  items: BillLineItem[]
+  total: number
 }

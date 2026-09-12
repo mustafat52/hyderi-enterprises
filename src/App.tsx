@@ -11,6 +11,7 @@ import ProductPage from './pages/ProductPage'
 import Alerts from './pages/Alerts'
 import Reports from './pages/Reports'
 import StockLog from './pages/StockLog'
+import BillPage from './pages/BillPage'
 import { InventoryProvider } from './state/InventoryContext'
 import { ModalControllerProvider } from './state/ModalController'
 import { ToastProvider } from './utils/ToastContext'
@@ -29,6 +30,7 @@ export default function App() {
               <Route path="/catalog/:categoryId/:brandId" element={<BrandPage />} />
               <Route path="/catalog/:categoryId/:brandId/:productId" element={<ProductPage />} />
               <Route path="/alerts" element={<Alerts />} />
+              <Route path="/bill" element={<BillPage />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/log" element={<StockLog />} />
             </Routes>

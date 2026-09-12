@@ -58,9 +58,9 @@ input, select { font-family: inherit; }
   background: var(--card); border-top: 1px solid var(--rule);
   display: flex; justify-content: space-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
 }
-.bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); background: none; border: none; padding: 4px 8px; min-width: 56px; }
+.bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-faint); background: none; border: none; padding: 4px 4px; min-width: 46px; }
 .bottom-nav-item.active { color: var(--barn-ink); }
-.bottom-nav-item span { font-size: 10px; font-weight: 600; }
+.bottom-nav-item span { font-size: 9.5px; font-weight: 600; }
 
 .fab {
   position: fixed; right: 18px; bottom: 74px; z-index: 45;
