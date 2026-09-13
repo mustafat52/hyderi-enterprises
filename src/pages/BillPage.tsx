@@ -27,12 +27,26 @@ export default function BillPage() {
     setQuery('')
   }
 
-  function updateItem(variantId: string, field: 'qty' | 'price', value: number) {
+  function updateItem(variantId: string, field: 'qty' | 'price', raw: string) {
     setItems(prev => prev.map(i => {
       if (i.variantId !== variantId) return i
-      const next = { ...i, [field]: value }
+      const num = raw === '' ? 0 : parseFloat(raw)
+      const next = { ...i, [field]: isNaN(num) ? 0 : num }
       next.lineTotal = next.qty * next.price
       return next
+    }))
+  }
+
+  function clampItem(variantId: string, field: 'qty' | 'price') {
+    setItems(prev => prev.map(i => {
+      if (i.variantId !== variantId) return i
+      const minVal = field === 'qty' ? 1 : 0
+      if (i[field] < minVal) {
+        const next = { ...i, [field]: minVal }
+        next.lineTotal = next.qty * next.price
+        return next
+      }
+      return i
     }))
   }
 
@@ -96,24 +110,30 @@ export default function BillPage() {
               <p className="text-[13.5px] font-medium">{item.label}</p>
               <button onClick={() => removeItem(item.variantId)} className="text-[11px] font-semibold" style={{ color: 'var(--barn-ink)' }}>Remove</button>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex-1 min-w-[70px]">
                 <div className="vlabel">Qty</div>
                 <input
-                  type="number" min={1} value={item.qty}
-                  onChange={e => updateItem(item.variantId, 'qty', Math.max(1, parseFloat(e.target.value) || 1))}
+                  type="number" inputMode="numeric" min={1}
+                  value={item.qty === 0 ? '' : item.qty}
+                  onChange={e => updateItem(item.variantId, 'qty', e.target.value)}
+                  onBlur={() => clampItem(item.variantId, 'qty')}
+                  className="w-full"
                   style={{ padding: '7px 9px' }}
                 />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-[85px]">
                 <div className="vlabel">Price / unit</div>
                 <input
-                  type="number" value={item.price}
-                  onChange={e => updateItem(item.variantId, 'price', Math.max(0, parseFloat(e.target.value) || 0))}
+                  type="number" inputMode="numeric"
+                  value={item.price === 0 ? '' : item.price}
+                  onChange={e => updateItem(item.variantId, 'price', e.target.value)}
+                  onBlur={() => clampItem(item.variantId, 'price')}
+                  className="w-full"
                   style={{ padding: '7px 9px' }}
                 />
               </div>
-              <div className="flex-1 text-right">
+              <div className="flex-1 min-w-[70px] text-right">
                 <div className="vlabel">Line total</div>
                 <div className="vval">{rupee(item.lineTotal)}</div>
               </div>

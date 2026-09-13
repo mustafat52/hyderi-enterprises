@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useInventory } from '../state/InventoryContext'
+import { useAuth } from '../state/AuthContext'
 import SummarySheet from './SummarySheet'
 
 const tabs = [
@@ -14,6 +15,7 @@ const tabs = [
 
 export default function Header() {
   const { allVariants } = useInventory()
+  const { logout } = useAuth()
   const lowCount = allVariants.filter(v => v.total < v.limit).length
   const [summaryOpen, setSummaryOpen] = useState(false)
 
@@ -65,6 +67,13 @@ export default function Header() {
                   {lowCount}
                 </span>
               )}
+            </button>
+            <button
+              onClick={() => { if (confirm('Sign out of the demo?')) logout() }}
+              className="hidden sm:block text-[11px] font-semibold"
+              style={{ color: '#9C936F' }}
+            >
+              Sign out
             </button>
           </div>
         </div>
