@@ -2,12 +2,13 @@ import { Link } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { useModalController } from '../state/ModalController'
 import { fmt, pct, rupee, timeAgo } from '../utils/format'
+import { getStockStatus } from '../utils/stock'
 
 export default function Dashboard() {
   const { categories, allVariants, log, resetDemo } = useInventory()
   const { open } = useModalController()
 
-  const low = allVariants.filter(v => v.total < v.limit)
+  const low = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy')
   const shopVal = allVariants.reduce((s, v) => s + v.shop * v.price, 0)
   const godownVal = allVariants.reduce((s, v) => s + v.godown * v.price, 0)
 
@@ -19,7 +20,31 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-7 pb-16">
-      <div className="ledger-hero grid grid-cols-1 md:grid-cols-2 mt-6 mb-8">
+      <div className="mt-6 mb-4">
+        <p className="text-[12.5px]" style={{ color: 'var(--ink-soft)' }}>Welcome back,</p>
+        <h1 className="text-[22px] mt-0.5">Hyderi Enterprises <span style={{ fontSize: 17 }}>👋</span></h1>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-7">
+        <div className="stat-tile" style={{ '--tilecolor': 'var(--teal)' } as React.CSSProperties}>
+          <div className="sn">{allVariants.length}</div>
+          <div className="sl">Total SKUs</div>
+        </div>
+        <div className="stat-tile" style={{ '--tilecolor': 'var(--barn)' } as React.CSSProperties}>
+          <div className="sn" style={{ color: low.length > 0 ? 'var(--barn-ink)' : 'var(--ink)' }}>{low.length}</div>
+          <div className="sl">Need reorder</div>
+        </div>
+        <div className="stat-tile" style={{ '--tilecolor': 'var(--marigold)' } as React.CSSProperties}>
+          <div className="sn">{rupee(shopVal + godownVal)}</div>
+          <div className="sl">Stock value</div>
+        </div>
+        <div className="stat-tile" style={{ '--tilecolor': 'var(--sage)' } as React.CSSProperties}>
+          <div className="sn">{categories.length}</div>
+          <div className="sl">Categories</div>
+        </div>
+      </div>
+
+      <div className="ledger-hero grid grid-cols-1 md:grid-cols-2 mb-8">
         <div className="p-6 md:p-8" style={{ borderBottom: '1px solid var(--rule)' }}>
           <div className="text-[11px] tracking-wide uppercase" style={{ color: 'var(--ink-faint)' }}>Stock ledger — today</div>
           <h1 className="text-[26px] mt-1.5 leading-tight">Everything on hand, <span className="font-display-italic">valued</span>.</h1>

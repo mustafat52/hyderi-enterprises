@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { fmt, rupee, timeAgo } from '../utils/format'
+import { getStockStatus } from '../utils/stock'
 
 export default function SummarySheet({ onClose }: { onClose: () => void }) {
   const { log, allVariants } = useInventory()
   const navigate = useNavigate()
 
-  const lowCount = allVariants.filter(v => v.total < v.limit).length
+  const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
   const syncEntries = log.filter(l => l.method === 'sync').slice(0, 6)
   const todaysSalesValue = 40200 // illustrative — would come from real Tally sync totals
 

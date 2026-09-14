@@ -161,7 +161,13 @@ export const seedCategories: Category[] = rawCategories.map(cat => ({
     ...b,
     products: b.products.map(p => ({
       ...p,
-      variants: p.variants.map(v => ({ ...v, sellingPrice: deriveSellingPrice(v.price) })),
+      variants: p.variants.map(v => ({
+        ...v,
+        sellingPrice: deriveSellingPrice(v.price),
+        // Original limits were tuned against combined (shop+godown) stock. Alerts now
+        // check Shop stock alone, so scale them down to a realistic shop-only threshold.
+        limit: Math.max(2, Math.round(v.limit * 0.4)),
+      })),
     })),
   })),
 }))

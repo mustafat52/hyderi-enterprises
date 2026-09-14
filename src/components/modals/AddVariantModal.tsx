@@ -48,7 +48,7 @@ export default function AddVariantModal({
           <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="Rs." />
         </div>
         <div className="field flex-1">
-          <label>Reorder limit</label>
+          <label>Reorder limit (Shop)</label>
           <input type="number" value={limit} onChange={e => setLimitVal(e.target.value)} placeholder="e.g. 10" />
         </div>
       </div>

@@ -1,13 +1,10 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
 export type ModalState =
-  | { type: 'transfer'; variantId: string; label: string }
-  | { type: 'adjust'; variantId: string; label: string }
-  | { type: 'limit'; variantId: string; label: string; currentLimit: number }
+  | { type: 'editVariant'; variantId: string; label: string; currentLimit: number }
   | { type: 'addCategory' }
   | { type: 'addProduct'; categoryId: string; brandId: string | null }
   | { type: 'addVariant'; categoryId: string; brandId: string; productId: string; productLabel: string }
-  | { type: 'quickUpdate' }
   | null
 
 interface ModalControllerValue {

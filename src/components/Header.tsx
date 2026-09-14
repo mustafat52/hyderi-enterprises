@@ -2,12 +2,14 @@ import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useInventory } from '../state/InventoryContext'
 import { useAuth } from '../state/AuthContext'
+import { getStockStatus } from '../utils/stock'
 import SummarySheet from './SummarySheet'
 
 const tabs = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/catalog', label: 'Catalog' },
   { to: '/bill', label: 'New Bill' },
+  { to: '/move', label: 'Move' },
   { to: '/alerts', label: 'Alerts' },
   { to: '/reports', label: 'Reports' },
   { to: '/log', label: 'Stock Log' },
@@ -16,7 +18,7 @@ const tabs = [
 export default function Header() {
   const { allVariants } = useInventory()
   const { logout } = useAuth()
-  const lowCount = allVariants.filter(v => v.total < v.limit).length
+  const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
   const [summaryOpen, setSummaryOpen] = useState(false)
 
   return (

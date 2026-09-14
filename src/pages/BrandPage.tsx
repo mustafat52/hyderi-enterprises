@@ -2,6 +2,8 @@ import { Link, useParams, Navigate } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { useModalController } from '../state/ModalController'
 import { rupee } from '../utils/format'
+import { getStockStatus } from '../utils/stock'
+import ProductThumb from '../components/ProductThumb'
 
 export default function BrandPage() {
   const { categoryId, brandId } = useParams()
@@ -38,14 +40,17 @@ export default function BrandPage() {
           const totalShop = p.variants.reduce((s, v) => s + v.shop, 0)
           const totalGod = p.variants.reduce((s, v) => s + v.godown, 0)
           const val = p.variants.reduce((s, v) => s + (v.shop + v.godown) * v.price, 0)
-          const anyLow = p.variants.some(v => v.shop + v.godown < v.limit)
+          const anyLow = p.variants.some(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy')
           return (
             <Link key={p.id} to={`/catalog/${cat.id}/${brand.id}/${p.id}`} className="product-row">
-              <div>
-                <div className="font-semibold text-[15px] font-display">{anyLow && <span className="low-dot" />}{p.name}</div>
-                <div className="text-[12px] mt-0.5" style={{ color: 'var(--ink-soft)' }}>{p.variants.length} variants</div>
+              <div className="flex items-center gap-3 min-w-0">
+                <ProductThumb name={p.name} color={brand.chip} />
+                <div className="min-w-0">
+                  <div className="font-semibold text-[15px] font-display truncate">{anyLow && <span className="low-dot" />}{p.name}</div>
+                  <div className="text-[12px] mt-0.5" style={{ color: 'var(--ink-soft)' }}>{p.variants.length} variants</div>
+                </div>
               </div>
-              <div className="text-right font-mono text-[12.5px]" style={{ color: 'var(--ink-soft)' }}>
+              <div className="text-right font-mono text-[12.5px] flex-shrink-0" style={{ color: 'var(--ink-soft)' }}>
                 <b className="block text-[15px]" style={{ color: 'var(--ink)', fontFamily: 'inherit' }}>{rupee(val)}</b>
                 {totalShop} shop · {totalGod} godown
               </div>

@@ -67,3 +67,20 @@ export interface Bill {
   items: BillLineItem[]
   total: number
 }
+
+export interface MoveLineItem {
+  variantId: string
+  categoryId: string
+  brandId: string
+  productId: string
+  label: string
+  qty: number
+}
+
+export interface MoveSlipRecord {
+  id: string
+  moveNo: string
+  ts: number
+  direction: 'g2s' | 's2g'
+  items: MoveLineItem[]
+}

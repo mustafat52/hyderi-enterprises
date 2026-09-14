@@ -2,6 +2,7 @@ import { Link, useParams, Navigate } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { useModalController } from '../state/ModalController'
 import { pct, rupee } from '../utils/format'
+import { getStockStatus } from '../utils/stock'
 
 export default function ProductPage() {
   const { categoryId, brandId, productId } = useParams()
@@ -63,10 +64,9 @@ export default function ProductPage() {
 
       <div style={{ border: '1px solid var(--rule)' }}>
         {product.variants.map(v => {
-          const total = v.shop + v.godown
-          const low = total < v.limit
           const maxBar = Math.max(v.shop, v.godown, 1)
           const label = `${product.name} — ${v.size}`
+          const status = getStockStatus(v.shop, v.godown, v.limit)
           return (
             <div key={v.id} className="p-4" style={{ borderBottom: '1px solid var(--rule-soft)', background: 'var(--card)' }}>
               <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 items-center">
@@ -87,16 +87,25 @@ export default function ProductPage() {
                 </div>
                 <div>
                   <div className="vlabel">Stock value</div>
-                  <div className="vval">{rupee(total * v.price)}</div>
+                  <div className="vval">{rupee((v.shop + v.godown) * v.price)}</div>
                 </div>
-                <div className="flex gap-1.5 flex-wrap justify-start sm:justify-end col-span-2 sm:col-span-1">
-                  {low ? <span className="tag low">Low</span> : <span className="tag ok">Healthy</span>}
+                <div className="flex gap-2 items-center justify-start sm:justify-end col-span-2 sm:col-span-1">
+                  {status.status === 'healthy' && <span className="tag ok">Healthy</span>}
+                  {status.status === 'move' && <span className="tag" style={{ color: '#3C5D78', borderColor: '#3C5D78', background: 'rgba(60,93,120,0.08)' }}>Move needed</span>}
+                  {status.status === 'purchase' && <span className="tag low">Purchase</span>}
+                  <button
+                    onClick={() => open({ type: 'editVariant', variantId: v.id, label, currentLimit: v.limit })}
+                    aria-label="Edit variant"
+                    style={{
+                      width: 28, height: 28, borderRadius: 5, border: '1px solid var(--ink)', background: 'var(--card)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    </svg>
+                  </button>
                 </div>
-              </div>
-              <div className="flex gap-1.5 mt-3 justify-end flex-wrap">
-                <button className="mini-btn" onClick={() => open({ type: 'adjust', variantId: v.id, label })}>Adjust</button>
-                <button className="mini-btn" onClick={() => open({ type: 'limit', variantId: v.id, label, currentLimit: v.limit })}>Set limit</button>
-                <button className="mini-btn solid" onClick={() => open({ type: 'transfer', variantId: v.id, label })}>Transfer</button>
               </div>
             </div>
           )

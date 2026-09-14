@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { getStockStatus } from '../utils/stock'
 import { useInventory } from '../state/InventoryContext'
 
 const items = [
@@ -42,7 +43,7 @@ const items = [
 
 export default function BottomNav() {
   const { allVariants } = useInventory()
-  const lowCount = allVariants.filter(v => v.total < v.limit).length
+  const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
 
   return (
     <nav className="bottom-nav md:hidden">
