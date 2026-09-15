@@ -73,12 +73,13 @@ input, select { font-family: inherit; }
 
 .ledger-hero { border: 1px solid var(--rule); background: var(--card); }
 .ledger-row { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; border-bottom: 1px dotted var(--rule); }
-.ledger-row:last-child { border-bottom: none; padding-top: 15px; border-top: 1px solid var(--ink); margin-top: 4px; }
+.ledger-row:last-child { border-bottom: none; }
+.ledger-row.total { padding-top: 15px; border-top: 1px solid var(--ink); margin-top: 4px; border-bottom: none; }
 .ledger-row .ll { font-size: 13px; color: var(--ink-soft); display: flex; align-items: center; gap: 7px; }
 .ledger-row .sw { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
 .ledger-row .lv { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; }
-.ledger-row:last-child .lv { font-size: 18px; }
-.ledger-row:last-child .ll { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--ink); }
+.ledger-row.total .lv { font-size: 18px; }
+.ledger-row.total .ll { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--ink); }
 
 .panel { background: var(--card); border: 1px solid var(--rule); padding: 20px; }
 .rule-line { flex: 1; height: 1px; background: var(--rule); }
@@ -86,6 +87,9 @@ input, select { font-family: inherit; }
 .cat-tile { border: 1px solid var(--rule); background: var(--card); text-align: left; border-top: 3px solid var(--tilecolor, var(--barn)); }
 .cat-tile .strip { height: 60px; display: flex; align-items: center; justify-content: center; }
 .cat-tile .strip .emoji { font-size: 28px; }
+
+.sn { font-family: 'Fraunces', serif; font-weight: 600; font-size: 21px; line-height: 1.15; }
+.sl { font-size: 10.5px; color: var(--ink-soft); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
 
 .brand-tile { display: flex; align-items: center; gap: 12px; border: 1px solid var(--rule); background: var(--card); padding: 14px 15px; text-align: left; }
 .brand-tile:hover { border-color: var(--ink); }

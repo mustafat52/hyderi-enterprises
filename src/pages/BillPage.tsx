@@ -146,7 +146,7 @@ export default function BillPage() {
         <div className="ledger-hero grid grid-cols-1 mt-2 mb-5">
           <div className="p-5">
             <div className="ledger-row"><div className="ll">Items</div><div className="lv">{items.length}</div></div>
-            <div className="ledger-row"><div className="ll font-display-italic">Total amount</div><div className="lv">{rupee(total)}</div></div>
+            <div className="ledger-row total"><div className="ll">Total amount</div><div className="lv">{rupee(total)}</div></div>
           </div>
         </div>
       )}
