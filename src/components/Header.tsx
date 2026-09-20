@@ -16,7 +16,7 @@ const tabs = [
 
 export default function Header() {
   const { allVariants } = useInventory()
-  const { logout } = useAuth()
+  const { currentUser, logout } = useAuth()
   const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
   const [summaryOpen, setSummaryOpen] = useState(false)
 
@@ -46,10 +46,12 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <span className="hidden sm:flex items-center gap-1.5 text-[10.5px]" style={{ color: '#9C936F' }}>
-              <span className="inline-block w-[5px] h-[5px] rounded-full" style={{ background: '#7FAE7F' }} />
-              Synced 3 min ago
-            </span>
+            {currentUser && (
+              <span className="hidden sm:flex items-center gap-1.5 text-[10.5px]" style={{ color: '#9C936F' }}>
+                <span className="inline-block w-[5px] h-[5px] rounded-full" style={{ background: '#7FAE7F' }} />
+                {currentUser.name} · {currentUser.role === 'owner' ? 'Owner' : 'Employee'}
+              </span>
+            )}
             <button
               onClick={() => setSummaryOpen(true)}
               className="relative p-1.5"
@@ -70,7 +72,7 @@ export default function Header() {
               )}
             </button>
             <button
-              onClick={() => { if (confirm('Sign out of the demo?')) logout() }}
+              onClick={() => { if (confirm('Sign out?')) logout() }}
               className="hidden sm:block text-[11px] font-semibold"
               style={{ color: '#9C936F' }}
             >

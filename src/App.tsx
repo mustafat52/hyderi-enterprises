@@ -21,7 +21,7 @@ import { ToastProvider } from './utils/ToastContext'
 import { AuthProvider, useAuth } from './state/AuthContext'
 
 function AuthedApp() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, currentUser } = useAuth()
   const [showWelcome, setShowWelcome] = useState(false)
   const prevAuth = useRef(isAuthenticated)
 
@@ -35,6 +35,8 @@ function AuthedApp() {
   }, [isAuthenticated])
 
   if (!isAuthenticated) return <Login />
+
+  const firstName = currentUser?.name.split(' ')[0]
 
   return (
     <BrowserRouter>
@@ -53,7 +55,7 @@ function AuthedApp() {
       <BottomNav />
       <FAB />
       <ModalHost />
-      {showWelcome && <WelcomeOverlay />}
+      {showWelcome && <WelcomeOverlay name={firstName} />}
     </BrowserRouter>
   )
 }

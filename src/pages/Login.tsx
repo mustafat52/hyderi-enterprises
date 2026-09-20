@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useAuth } from '../state/AuthContext'
+import { useAuth, STAFF_DIRECTORY } from '../state/AuthContext'
 
 export default function Login() {
   const { login } = useAuth()
+  const [userId, setUserId] = useState(STAFF_DIRECTORY[0].id)
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(false)
@@ -10,7 +11,7 @@ export default function Login() {
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
-    const ok = login(password)
+    const ok = login(userId, password)
     if (!ok) {
       setError(true)
       setShake(true)
@@ -33,6 +34,18 @@ export default function Login() {
         </div>
 
         <form onSubmit={submit}>
+          <div className="field">
+            <label>Who are you?</label>
+            <select
+              value={userId}
+              onChange={e => { setUserId(e.target.value); setError(false) }}
+            >
+              {STAFF_DIRECTORY.map(u => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="field" style={{ position: 'relative' }}>
             <label>Password</label>
             <input
