@@ -12,10 +12,6 @@ interface ProductSeed { id: string; name: string; variants: VariantSeed[] }
 interface BrandSeed { id: string; name: string; chip: string; products: ProductSeed[] }
 interface CategorySeed { id: string; name: string; unit: string; emoji: string; colors: [string, string]; brands: BrandSeed[] }
 
-export function deriveSellingPrice(price: number): number {
-  return Math.round((price * 1.25) / 5) * 5
-}
-
 const rawCategories: CategorySeed[] = [
   {
     id: 'paints', name: 'Paints', unit: 'L', emoji: '🎨', colors: ['#99372A', '#B97A1C'],
@@ -163,7 +159,6 @@ export const seedCategories: Category[] = rawCategories.map(cat => ({
       ...p,
       variants: p.variants.map(v => ({
         ...v,
-        sellingPrice: deriveSellingPrice(v.price),
         // Original limits were tuned against combined (shop+godown) stock. Alerts now
         // check Shop stock alone, so scale them down to a realistic shop-only threshold.
         limit: Math.max(2, Math.round(v.limit * 0.4)),
@@ -181,21 +176,3 @@ export const seedLog: LogEntry[] = [
   { id: 'l4', ts: now - 1 * HR, actor: 'Tally sync', method: 'sync', description: 'Purchase bill #4820 synced — 6 items added to Godown' },
   { id: 'l5', ts: now - 2 * HR, actor: 'Owner', method: 'adjustment', description: 'Tractor Emulsion 1L (+3, cash sale)', qtyDelta: 3 },
 ]
-
-/** Illustrative monthly revenue history — GST sales come from Tally sync, so this is
- *  seeded as historical context; non-GST (cash bill) revenue starts at 0 per month
- *  and grows live as bills are created in the demo. Covers the last 14 months so the
- *  Reports page can show a meaningful month-wise AND year-wise view. */
-export interface MonthlyRevenue { year: number; month: number; gst: number }
-
-export function generateSeedMonthlyGst(): MonthlyRevenue[] {
-  const out: MonthlyRevenue[] = []
-  const d = new Date()
-  for (let i = 13; i >= 0; i--) {
-    const dt = new Date(d.getFullYear(), d.getMonth() - i, 1)
-    const seed = dt.getFullYear() * 12 + dt.getMonth()
-    const base = 320000 + (seed * 2654435761) % 180000
-    out.push({ year: dt.getFullYear(), month: dt.getMonth(), gst: Math.round(base / 1000) * 1000 })
-  }
-  return out
-}

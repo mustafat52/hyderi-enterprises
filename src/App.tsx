@@ -13,7 +13,6 @@ import ProductPage from './pages/ProductPage'
 import Alerts from './pages/Alerts'
 import Reports from './pages/Reports'
 import StockLog from './pages/StockLog'
-import BillPage from './pages/BillPage'
 import MovePage from './pages/MovePage'
 import Login from './pages/Login'
 import { InventoryProvider } from './state/InventoryContext'
@@ -47,7 +46,6 @@ function AuthedApp() {
         <Route path="/catalog/:categoryId/:brandId" element={<BrandPage />} />
         <Route path="/catalog/:categoryId/:brandId/:productId" element={<ProductPage />} />
         <Route path="/alerts" element={<Alerts />} />
-        <Route path="/bill" element={<BillPage />} />
         <Route path="/move" element={<MovePage />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/log" element={<StockLog />} />

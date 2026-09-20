@@ -3,8 +3,7 @@ export interface Variant {
   size: string
   shop: number
   godown: number
-  price: number // purchase price per unit
-  sellingPrice: number // selling price per unit (for cash/no-bill sales)
+  price: number // purchase price per unit — the only price we track now
   limit: number // reorder limit
 }
 
@@ -30,6 +29,9 @@ export interface Category {
   brands: Brand[]
 }
 
+// 'cash-sale' is kept for now so StockLog.tsx (not touched in this task) doesn't
+// break on a missing union member. It's unused until Sale is rebuilt in Task 4 —
+// clean this up then.
 export type LogMethod = 'sync' | 'transfer' | 'adjustment' | 'new-item' | 'cash-sale'
 
 export interface LogEntry {
@@ -46,26 +48,6 @@ export interface VariantRef {
   brandId: string
   productId: string
   variantId: string
-}
-
-export interface BillLineItem {
-  variantId: string
-  categoryId: string
-  brandId: string
-  productId: string
-  label: string
-  qty: number
-  price: number
-  lineTotal: number
-}
-
-export interface Bill {
-  id: string
-  billNo: string
-  ts: number
-  customerName: string
-  items: BillLineItem[]
-  total: number
 }
 
 export interface MoveLineItem {
