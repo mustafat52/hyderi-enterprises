@@ -8,6 +8,7 @@ import SummarySheet from './SummarySheet'
 const tabs = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/catalog', label: 'Catalog' },
+  { to: '/purchase', label: 'Purchase' },
   { to: '/move', label: 'Move' },
   { to: '/alerts', label: 'Alerts' },
   { to: '/reports', label: 'Reports' },

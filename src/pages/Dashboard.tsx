@@ -75,6 +75,39 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-3 mt-6">
+        <Link
+          to="/purchase"
+          className="flex items-center gap-3 p-4"
+          style={{ border: '1px solid var(--ink)', background: 'var(--card)' }}
+        >
+          <div style={{ width: 38, height: 38, borderRadius: 8, background: 'var(--sage)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 8V21H3V8" /><path d="M1 3H23V8H1z" /><path d="M10 12h4" />
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-[14px]">Purchase</div>
+            <div className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Stock arriving in</div>
+          </div>
+        </Link>
+        <Link
+          to="/move"
+          className="flex items-center gap-3 p-4"
+          style={{ border: '1px solid var(--ink)', background: 'var(--card)' }}
+        >
+          <div style={{ width: 38, height: 38, borderRadius: 8, background: '#3C5D78', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 3 4 7l4 4" /><path d="M4 7h11a4 4 0 0 1 4 4v1" /><path d="M16 21l4-4-4-4" /><path d="M20 17H9a4 4 0 0 1-4-4v-1" />
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-[14px]">Move</div>
+            <div className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Godown ↔ Shop</div>
+          </div>
+        </Link>
+      </div>
+
       <div className="flex items-baseline gap-4 mb-4 mt-11">
         <h2 className="text-[18px]">Where the stock sits</h2>
         <div className="rule-line" />
