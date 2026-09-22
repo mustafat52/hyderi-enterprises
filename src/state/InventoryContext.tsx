@@ -1,15 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import type { Category, LogEntry, LogMethod, MoveLineItem, MoveSlipRecord, PurchaseLineItem, PurchaseSlipRecord, Variant } from '../types'
+import type { Category, LogEntry, LogMethod, MoveLineItem, MoveSlipRecord, PurchaseLineItem, PurchaseSlipRecord, SaleLineItem, SaleSlipRecord, Variant } from '../types'
 import { seedCategories, seedLog } from '../data/seedData'
 import { hashSeed } from '../utils/format'
 
-const STORAGE_KEY = 'hyderi-inventory-state-v4'
+const STORAGE_KEY = 'hyderi-inventory-state-v5'
 
 interface State {
   categories: Category[]
   log: LogEntry[]
   moves: MoveSlipRecord[]
   purchases: PurchaseSlipRecord[]
+  sales: SaleSlipRecord[]
 }
 
 function loadInitial(): State {
@@ -23,13 +24,14 @@ function loadInitial(): State {
           log: parsed.log,
           moves: parsed.moves || [],
           purchases: parsed.purchases || [],
+          sales: parsed.sales || [],
         }
       }
     }
   } catch {
     // fall through to seed
   }
-  return { categories: seedCategories, log: seedLog, moves: [], purchases: [] }
+  return { categories: seedCategories, log: seedLog, moves: [], purchases: [], sales: [] }
 }
 
 function newId(prefix: string): string {
@@ -44,6 +46,7 @@ type Action =
   | { type: 'ADD_VARIANT'; categoryId: string; brandId: string; productId: string; size: string; shop: number; godown: number; price: number; limit: number; productLabel: string }
   | { type: 'SUBMIT_MOVE'; direction: 'g2s' | 's2g'; items: MoveLineItem[] }
   | { type: 'SUBMIT_PURCHASE'; items: PurchaseLineItem[] }
+  | { type: 'SUBMIT_SALE'; items: SaleLineItem[] }
   | { type: 'RESET' }
 
 function pushLog(log: LogEntry[], method: LogMethod, description: string, qtyDelta?: number): LogEntry[] {
@@ -153,12 +156,25 @@ function reducer(state: State, action: Action): State {
       const purchaseNo = `PUR-${1000 + state.purchases.length + 1}`
       const purchase: PurchaseSlipRecord = { id: newId('purchase'), purchaseNo, ts: Date.now(), items: action.items }
       const itemSummary = action.items.map(i => `${i.label} \u00d7${i.totalQty}`).join(', ')
-      // Reusing 'transfer' as the log method here — see the note in types.ts.
-      const log = pushLog(state.log, 'transfer', `Purchase slip ${purchaseNo} \u2014 ${itemSummary}`, undefined)
+      const log = pushLog(state.log, 'purchase', `Purchase slip ${purchaseNo} \u2014 ${itemSummary}`, undefined)
       return { ...state, categories, log, purchases: [purchase, ...state.purchases] }
     }
+    case 'SUBMIT_SALE': {
+      let categories = state.categories
+      for (const item of action.items) {
+        categories = mapVariant(categories, item.variantId, v => {
+          if (item.source === 'shop') return { ...v, shop: Math.max(0, v.shop - item.qty) }
+          return { ...v, godown: Math.max(0, v.godown - item.qty) }
+        })
+      }
+      const saleNo = `SALE-${1000 + state.sales.length + 1}`
+      const sale: SaleSlipRecord = { id: newId('sale'), saleNo, ts: Date.now(), items: action.items }
+      const itemSummary = action.items.map(i => `${i.label} \u00d7${i.qty} (${i.source === 'shop' ? 'Shop' : 'Godown'})`).join(', ')
+      const log = pushLog(state.log, 'sale', `Sale ${saleNo} \u2014 ${itemSummary}`, undefined)
+      return { ...state, categories, log, sales: [sale, ...state.sales] }
+    }
     case 'RESET':
-      return { categories: seedCategories, log: seedLog, moves: [], purchases: [] }
+      return { categories: seedCategories, log: seedLog, moves: [], purchases: [], sales: [] }
     default:
       return state
   }
@@ -182,6 +198,7 @@ interface InventoryContextValue {
   log: LogEntry[]
   moves: MoveSlipRecord[]
   purchases: PurchaseSlipRecord[]
+  sales: SaleSlipRecord[]
   allVariants: FlatVariant[]
   adjustStock: (variantId: string, location: 'shop' | 'godown', sign: 1 | -1, qty: number, reason: string, label: string) => void
   setLimit: (variantId: string, limit: number) => void
@@ -190,6 +207,7 @@ interface InventoryContextValue {
   addVariant: (categoryId: string, brandId: string, productId: string, size: string, shop: number, godown: number, price: number, limit: number, productLabel: string) => void
   submitMove: (direction: 'g2s' | 's2g', items: MoveLineItem[]) => void
   submitPurchase: (items: PurchaseLineItem[]) => void
+  submitSale: (items: SaleLineItem[]) => void
   resetDemo: () => void
 }
 
@@ -228,6 +246,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     log: state.log,
     moves: state.moves,
     purchases: state.purchases,
+    sales: state.sales,
     allVariants,
     adjustStock: (variantId, location, sign, qty, reason, label) => dispatch({ type: 'ADJUST', variantId, location, sign, qty, reason, label }),
     setLimit: (variantId, limit) => dispatch({ type: 'SET_LIMIT', variantId, limit }),
@@ -238,6 +257,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'ADD_VARIANT', categoryId, brandId, productId, size, shop, godown, price, limit, productLabel }),
     submitMove: (direction, items) => dispatch({ type: 'SUBMIT_MOVE', direction, items }),
     submitPurchase: (items) => dispatch({ type: 'SUBMIT_PURCHASE', items }),
+    submitSale: (items) => dispatch({ type: 'SUBMIT_SALE', items }),
     resetDemo: () => dispatch({ type: 'RESET' }),
   }
 

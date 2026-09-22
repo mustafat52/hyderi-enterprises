@@ -5,33 +5,37 @@ import { timeAgo } from '../utils/format'
 
 const filters: { key: LogMethod | 'all'; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'sync', label: 'Tally sync' },
-  { key: 'cash-sale', label: 'Cash bills' },
-  { key: 'transfer', label: 'Transfers' },
+  { key: 'purchase', label: 'Purchases' },
+  { key: 'sale', label: 'Sales' },
+  { key: 'transfer', label: 'Moves' },
   { key: 'adjustment', label: 'Adjustments' },
   { key: 'new-item', label: 'New items' },
+  { key: 'sync', label: 'Tally sync (old)' },
 ]
 
 const methodColor: Record<LogMethod, string> = {
   sync: 'var(--sage)',
+  purchase: '#8A6A3C',
   transfer: '#3C5D78',
+  sale: 'var(--barn)',
   adjustment: 'var(--marigold)',
   'new-item': 'var(--teal)',
-  'cash-sale': 'var(--barn)',
 }
 const methodLabel: Record<LogMethod, string> = {
   sync: 'Tally sync',
-  transfer: 'Transfer',
+  purchase: 'Purchase',
+  transfer: 'Move',
+  sale: 'Sale',
   adjustment: 'Adjustment',
   'new-item': 'New item',
-  'cash-sale': 'Cash bill',
 }
 const methodBg: Record<LogMethod, string> = {
   sync: 'rgba(85,112,63,0.12)',
+  purchase: 'rgba(138,106,60,0.14)',
   transfer: 'rgba(60,93,120,0.12)',
+  sale: 'rgba(153,55,42,0.12)',
   adjustment: 'rgba(185,122,28,0.15)',
   'new-item': 'rgba(31,92,88,0.12)',
-  'cash-sale': 'rgba(153,55,42,0.12)',
 }
 
 export default function StockLog() {

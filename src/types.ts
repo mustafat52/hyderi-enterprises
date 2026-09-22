@@ -29,11 +29,10 @@ export interface Category {
   brands: Brand[]
 }
 
-// 'cash-sale' is kept for now so StockLog.tsx (not touched yet) doesn't break on a
-// missing union member. Purchase entries currently reuse 'transfer' for the same
-// reason — see PurchasePage.tsx notes. Clean both up once StockLog.tsx is shared
-// in Task 4 and dedicated 'purchase' / 'sale' methods can be added safely.
-export type LogMethod = 'sync' | 'transfer' | 'adjustment' | 'new-item' | 'cash-sale'
+// 'sync' is kept for the historical seed log entries from when Tally was still part
+// of the picture — safe to retire once those are cleaned up (a separate task).
+// 'cash-sale' has been removed — Sale now has its own proper 'sale' method.
+export type LogMethod = 'sync' | 'purchase' | 'transfer' | 'sale' | 'adjustment' | 'new-item'
 
 export interface LogEntry {
   id: string
@@ -85,4 +84,21 @@ export interface PurchaseSlipRecord {
   purchaseNo: string
   ts: number
   items: PurchaseLineItem[]
+}
+
+export interface SaleLineItem {
+  variantId: string
+  categoryId: string
+  brandId: string
+  productId: string
+  label: string
+  qty: number
+  source: 'shop' | 'godown'
+}
+
+export interface SaleSlipRecord {
+  id: string
+  saleNo: string
+  ts: number
+  items: SaleLineItem[]
 }

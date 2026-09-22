@@ -15,6 +15,7 @@ import Reports from './pages/Reports'
 import StockLog from './pages/StockLog'
 import MovePage from './pages/MovePage'
 import PurchasePage from './pages/PurchasePage'
+import SalePage from './pages/SalePage'
 import Login from './pages/Login'
 import { InventoryProvider } from './state/InventoryContext'
 import { ModalControllerProvider } from './state/ModalController'
@@ -50,6 +51,7 @@ function AuthedApp() {
         <Route path="/catalog/:categoryId/:brandId/:productId" element={<ProductPage />} />
         <Route path="/alerts" element={<Alerts />} />
         <Route path="/purchase" element={<PurchasePage />} />
+        <Route path="/sale" element={<SalePage />} />
         <Route path="/move" element={<MovePage />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/log" element={<StockLog />} />

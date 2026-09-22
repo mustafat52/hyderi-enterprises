@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom'
 export default function FAB() {
   const navigate = useNavigate()
   return (
-    <button className="fab md:hidden" onClick={() => navigate('/move')} aria-label="Move stock">
+    <button className="fab md:hidden" onClick={() => navigate('/sale')} aria-label="New sale">
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8 3 4 7l4 4" />
-        <path d="M4 7h11a4 4 0 0 1 4 4v1" />
-        <path d="M16 21l4-4-4-4" />
-        <path d="M20 17H9a4 4 0 0 1-4-4v-1" />
+        <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
       </svg>
     </button>
   )
