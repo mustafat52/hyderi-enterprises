@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import FAB from './components/FAB'
 import ModalHost from './components/ModalHost'
 import WelcomeOverlay from './components/WelcomeOverlay'
 import Dashboard from './pages/Dashboard'
+import EmployeeDashboard from './pages/EmployeeDashboard'
 import CatalogRoot from './pages/CatalogRoot'
 import CategoryPage from './pages/CategoryPage'
 import BrandPage from './pages/BrandPage'
@@ -44,7 +45,7 @@ function AuthedApp() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={currentUser?.role === 'owner' ? <Dashboard /> : <EmployeeDashboard />} />
         <Route path="/catalog" element={<CatalogRoot />} />
         <Route path="/catalog/:categoryId" element={<CategoryPage />} />
         <Route path="/catalog/:categoryId/:brandId" element={<BrandPage />} />
@@ -53,7 +54,9 @@ function AuthedApp() {
         <Route path="/purchase" element={<PurchasePage />} />
         <Route path="/sale" element={<SalePage />} />
         <Route path="/move" element={<MovePage />} />
-        <Route path="/reports" element={<Reports />} />
+        {/* Reports is owner-only content — an employee hitting this URL directly
+            gets bounced home rather than just having the nav link hidden. */}
+        <Route path="/reports" element={currentUser?.role === 'owner' ? <Reports /> : <Navigate to="/" replace />} />
         <Route path="/log" element={<StockLog />} />
       </Routes>
       <BottomNav />
