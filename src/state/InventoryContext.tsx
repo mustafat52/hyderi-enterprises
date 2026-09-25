@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
 import type { Category, LogEntry, LogMethod, MoveLineItem, MoveSlipRecord, PurchaseLineItem, PurchaseSlipRecord, SaleLineItem, SaleSlipRecord, Variant } from '../types'
 import { seedCategories, seedLog } from '../data/seedData'
-import { hashSeed } from '../utils/format'
 
 const STORAGE_KEY = 'hyderi-inventory-state-v5'
 
@@ -190,7 +189,6 @@ export interface FlatVariant extends Variant {
   productId: string
   productName: string
   total: number
-  sold30: number
 }
 
 interface InventoryContextValue {
@@ -232,7 +230,6 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
               brandId: brand.id, brandName: brand.name, brandChip: brand.chip,
               productId: product.id, productName: product.name,
               total: v.shop + v.godown,
-              sold30: (hashSeed(v.id) % 78) + 6,
             })
           }
         }

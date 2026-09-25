@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import {
   ResponsiveContainer, Tooltip,
   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Legend,
 } from 'recharts'
 import { useInventory } from '../state/InventoryContext'
 import { fmt, rupee } from '../utils/format'
+import { PERIOD_OPTIONS, periodRange, purchasedQtyByVariant, soldQtyByVariant, type StatsPeriod } from '../utils/salesStats'
 
 function RTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
@@ -17,11 +19,31 @@ function RTooltip({ active, payload, label }: any) {
   )
 }
 
-export default function Reports() {
-  const { categories, allVariants } = useInventory()
+function UnitsTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--card)', padding: '8px 11px', fontSize: 12, borderRadius: 4 }}>
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+      {payload.map((p: any) => (
+        <div key={p.name} style={{ color: p.color }}>{p.name}: {fmt(p.value)} units</div>
+      ))}
+    </div>
+  )
+}
 
-  const fast = [...allVariants].sort((a, b) => b.sold30 - a.sold30).slice(0, 6)
-  const slow = [...allVariants].sort((a, b) => a.sold30 - b.sold30).slice(0, 6)
+export default function Reports() {
+  const { categories, allVariants, purchases, sales } = useInventory()
+  const [period, setPeriod] = useState<StatsPeriod>('last30')
+  const periodLabel = PERIOD_OPTIONS.find(p => p.value === period)!.label
+
+  const { start, end } = periodRange(period)
+  const soldMap = soldQtyByVariant(sales, start, end)
+  const purchasedMap = purchasedQtyByVariant(purchases, start, end)
+
+  const withSold = allVariants.map(v => ({ ...v, sold: soldMap[v.id] || 0 }))
+  const soldOnly = withSold.filter(v => v.sold > 0)
+  const fast = [...soldOnly].sort((a, b) => b.sold - a.sold).slice(0, 6)
+  const slow = [...soldOnly].sort((a, b) => a.sold - b.sold).slice(0, 6)
 
   const pieData = categories.map(c => {
     const vs = allVariants.filter(v => v.categoryId === c.id)
@@ -38,6 +60,15 @@ export default function Reports() {
       Godown: vs.reduce((s, v) => s + v.godown, 0),
     }
   })
+
+  const flowData = categories.map(c => {
+    const vs = allVariants.filter(v => v.categoryId === c.id)
+    return {
+      name: c.name,
+      'Stock in': vs.reduce((s, v) => s + (purchasedMap[v.id] || 0), 0),
+      'Stock out': vs.reduce((s, v) => s + (soldMap[v.id] || 0), 0),
+    }
+  }).filter(d => d['Stock in'] > 0 || d['Stock out'] > 0)
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-7 pb-24 md:pb-16">
@@ -80,10 +111,52 @@ export default function Reports() {
         </div>
       </div>
 
+      {/* Period selector — drives everything below, since it's all real sales/purchase history now */}
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <span className="text-[11.5px] font-semibold uppercase tracking-wide" style={{ color: 'var(--ink-faint)' }}>Period</span>
+        <div className="flex gap-1.5">
+          {PERIOD_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setPeriod(opt.value)}
+              className="text-[12px] font-semibold px-2.5 py-1"
+              style={{
+                border: '1px solid var(--ink)',
+                background: period === opt.value ? 'var(--ink)' : 'var(--card)',
+                color: period === opt.value ? 'var(--card)' : 'var(--ink)',
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Stock In vs Stock Out */}
+      <div className="panel mb-5">
+        <h3 className="text-[14.5px] mb-1">Stock in vs Stock out <span className="text-[11.5px] font-normal" style={{ color: 'var(--ink-faint)' }}>— {periodLabel.toLowerCase()}</span></h3>
+        {flowData.length === 0 ? (
+          <p className="text-[12.5px] mt-2" style={{ color: 'var(--ink-soft)' }}>No purchases or sales recorded in this period.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={Math.max(220, flowData.length * 46)}>
+            <BarChart data={flowData} layout="vertical" margin={{ top: 0, right: 12, left: 6, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--rule-soft)" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--ink-soft)' }} axisLine={{ stroke: 'var(--rule)' }} tickLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: 'var(--ink)' }} axisLine={false} tickLine={false} width={95} />
+              <Tooltip content={<UnitsTooltip />} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Bar dataKey="Stock in" fill="var(--sage)" radius={[0, 3, 3, 0]} />
+              <Bar dataKey="Stock out" fill="var(--barn)" radius={[0, 3, 3, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
       {/* Movers */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="panel">
-          <h3 className="text-[14.5px] mb-1">Fast movers <span className="text-[11.5px] font-normal" style={{ color: 'var(--ink-faint)' }}>— highest 30-day activity</span></h3>
+          <h3 className="text-[14.5px] mb-1">Fast movers <span className="text-[11.5px] font-normal" style={{ color: 'var(--ink-faint)' }}>— {periodLabel.toLowerCase()}</span></h3>
+          {fast.length === 0 && <p className="text-[12.5px] mt-2" style={{ color: 'var(--ink-soft)' }}>No sales recorded in this period.</p>}
           {fast.map((m, i) => (
             <div key={m.id} className="rank-row">
               <div className="rank-num">{i + 1}.</div>
@@ -91,12 +164,13 @@ export default function Reports() {
                 <div className="text-[13px] font-medium truncate">{m.productName} — {m.size}</div>
                 <div className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{m.categoryName} · {m.brandName}</div>
               </div>
-              <div className="font-mono text-[12.5px] font-semibold flex-shrink-0" style={{ color: 'var(--sage)' }}>{fmt(m.sold30)} units</div>
+              <div className="font-mono text-[12.5px] font-semibold flex-shrink-0" style={{ color: 'var(--sage)' }}>{fmt(m.sold)} units</div>
             </div>
           ))}
         </div>
         <div className="panel">
-          <h3 className="text-[14.5px] mb-1">Slow movers <span className="text-[11.5px] font-normal" style={{ color: 'var(--ink-faint)' }}>— lowest 30-day activity</span></h3>
+          <h3 className="text-[14.5px] mb-1">Slow movers <span className="text-[11.5px] font-normal" style={{ color: 'var(--ink-faint)' }}>— {periodLabel.toLowerCase()}</span></h3>
+          {slow.length === 0 && <p className="text-[12.5px] mt-2" style={{ color: 'var(--ink-soft)' }}>Nothing with recorded sales in this period yet.</p>}
           {slow.map((m, i) => (
             <div key={m.id} className="rank-row">
               <div className="rank-num">{i + 1}.</div>
@@ -104,7 +178,7 @@ export default function Reports() {
                 <div className="text-[13px] font-medium truncate">{m.productName} — {m.size}</div>
                 <div className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{m.categoryName} · {m.brandName}</div>
               </div>
-              <div className="font-mono text-[12.5px] font-semibold flex-shrink-0" style={{ color: 'var(--barn-ink)' }}>{fmt(m.sold30)} units</div>
+              <div className="font-mono text-[12.5px] font-semibold flex-shrink-0" style={{ color: 'var(--barn-ink)' }}>{fmt(m.sold)} units</div>
             </div>
           ))}
         </div>
