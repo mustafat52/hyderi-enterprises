@@ -29,10 +29,8 @@ export interface Category {
   brands: Brand[]
 }
 
-// 'sync' is kept for the historical seed log entries from when Tally was still part
-// of the picture — safe to retire once those are cleaned up (a separate task).
 // 'cash-sale' has been removed — Sale now has its own proper 'sale' method.
-export type LogMethod = 'sync' | 'purchase' | 'transfer' | 'sale' | 'adjustment' | 'new-item'
+export type LogMethod = 'purchase' | 'transfer' | 'sale' | 'adjustment' | 'new-item'
 
 export interface LogEntry {
   id: string

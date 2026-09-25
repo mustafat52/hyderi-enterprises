@@ -10,11 +10,9 @@ const filters: { key: LogMethod | 'all'; label: string }[] = [
   { key: 'transfer', label: 'Moves' },
   { key: 'adjustment', label: 'Adjustments' },
   { key: 'new-item', label: 'New items' },
-  { key: 'sync', label: 'Tally sync (old)' },
 ]
 
 const methodColor: Record<LogMethod, string> = {
-  sync: 'var(--sage)',
   purchase: '#8A6A3C',
   transfer: '#3C5D78',
   sale: 'var(--barn)',
@@ -22,7 +20,6 @@ const methodColor: Record<LogMethod, string> = {
   'new-item': 'var(--teal)',
 }
 const methodLabel: Record<LogMethod, string> = {
-  sync: 'Tally sync',
   purchase: 'Purchase',
   transfer: 'Move',
   sale: 'Sale',
@@ -30,7 +27,6 @@ const methodLabel: Record<LogMethod, string> = {
   'new-item': 'New item',
 }
 const methodBg: Record<LogMethod, string> = {
-  sync: 'rgba(85,112,63,0.12)',
   purchase: 'rgba(138,106,60,0.14)',
   transfer: 'rgba(60,93,120,0.12)',
   sale: 'rgba(153,55,42,0.12)',

@@ -170,9 +170,5 @@ export const seedCategories: Category[] = rawCategories.map(cat => ({
 const now = Date.now()
 const HR = 3600_000
 export const seedLog: LogEntry[] = [
-  { id: 'l1', ts: now - 2 * 60_000, actor: 'Tally sync', method: 'sync', description: 'Purchase bill #4821 synced — 12 items added to Godown' },
-  { id: 'l2', ts: now - 11 * 60_000, actor: 'Tally sync', method: 'sync', description: 'Sales bill #9032 synced — 4 items deducted from Shop' },
-  { id: 'l3', ts: now - 34 * 60_000, actor: 'Tally sync', method: 'sync', description: 'Sales bill #9031 synced — 2 items deducted from Shop' },
-  { id: 'l4', ts: now - 1 * HR, actor: 'Tally sync', method: 'sync', description: 'Purchase bill #4820 synced — 6 items added to Godown' },
   { id: 'l5', ts: now - 2 * HR, actor: 'Owner', method: 'adjustment', description: 'Tractor Emulsion 1L (+3, cash sale)', qtyDelta: 3 },
 ]

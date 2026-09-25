@@ -5,7 +5,6 @@ import { getStockStatus } from '../utils/stock'
 import { timeAgo } from '../utils/format'
 
 const logDotColor: Record<string, string> = {
-  sync: 'var(--sage)',
   purchase: '#8A6A3C',
   transfer: '#3C5D78',
   sale: 'var(--barn)',

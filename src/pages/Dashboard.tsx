@@ -5,7 +5,6 @@ import { fmt, pct, rupee, timeAgo } from '../utils/format'
 import { getStockStatus } from '../utils/stock'
 
 const logDotColor: Record<string, string> = {
-  sync: 'var(--sage)',
   purchase: '#8A6A3C',
   transfer: '#3C5D78',
   sale: 'var(--barn)',
