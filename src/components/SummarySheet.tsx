@@ -1,15 +1,31 @@
 import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
-import { fmt, rupee, timeAgo } from '../utils/format'
+import { fmt, timeAgo } from '../utils/format'
 import { getStockStatus } from '../utils/stock'
 
+const logDotColor: Record<string, string> = {
+  sync: 'var(--sage)',
+  purchase: '#8A6A3C',
+  transfer: '#3C5D78',
+  sale: 'var(--barn)',
+  adjustment: 'var(--marigold)',
+  'new-item': 'var(--teal)',
+}
+
+function isToday(ts: number): boolean {
+  const d = new Date(ts)
+  const now = new Date()
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()
+}
+
 export default function SummarySheet({ onClose }: { onClose: () => void }) {
-  const { log, allVariants } = useInventory()
+  const { log, allVariants, purchases, sales } = useInventory()
   const navigate = useNavigate()
 
   const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
-  const syncEntries = log.filter(l => l.method === 'sync').slice(0, 6)
-  const todaysSalesValue = 40200 // illustrative — would come from real Tally sync totals
+  const purchasesToday = purchases.filter(p => isToday(p.ts)).length
+  const salesToday = sales.filter(s => isToday(s.ts)).length
+  const recent = log.slice(0, 6)
 
   function go(path: string) {
     onClose()
@@ -26,12 +42,12 @@ export default function SummarySheet({ onClose }: { onClose: () => void }) {
 
         <div className="grid grid-cols-3 gap-2 mb-5">
           <div className="panel !p-3">
-            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--ink-faint)' }}>Bills today</div>
-            <div className="font-mono text-lg font-semibold mt-1">{syncEntries.filter(s => s.description.includes('bill')).length}</div>
+            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--ink-faint)' }}>Purchases today</div>
+            <div className="font-mono text-lg font-semibold mt-1">{purchasesToday}</div>
           </div>
           <div className="panel !p-3">
-            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--ink-faint)' }}>Today's sales</div>
-            <div className="font-mono text-lg font-semibold mt-1">{rupee(todaysSalesValue)}</div>
+            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--ink-faint)' }}>Sales today</div>
+            <div className="font-mono text-lg font-semibold mt-1">{salesToday}</div>
           </div>
           <div className="panel !p-3" style={{ borderTop: '3px solid var(--barn)' }}>
             <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--ink-faint)' }}>Alerts</div>
@@ -39,12 +55,12 @@ export default function SummarySheet({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--ink-faint)' }}>Recent Tally activity</div>
+        <div className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--ink-faint)' }}>Recent activity</div>
         <div className="mb-5">
-          {syncEntries.length === 0 && <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>No sync activity yet.</p>}
-          {syncEntries.map(e => (
+          {recent.length === 0 && <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>No activity yet.</p>}
+          {recent.map(e => (
             <div key={e.id} className="log-row">
-              <div className="log-dot" style={{ background: 'var(--sage)' }} />
+              <div className="log-dot" style={{ background: logDotColor[e.method] || 'var(--ink-faint)' }} />
               <div className="flex-1">
                 <p className="text-[12.5px]" style={{ color: 'var(--ink)' }}>{e.description}</p>
                 <p className="text-[10.5px] font-mono mt-0.5" style={{ color: 'var(--ink-faint)' }}>{timeAgo(e.ts)}</p>
