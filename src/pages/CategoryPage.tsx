@@ -1,11 +1,14 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { useModalController } from '../state/ModalController'
+import { useAuth } from '../state/AuthContext'
 
 export default function CategoryPage() {
   const { categoryId } = useParams()
   const { categories } = useInventory()
   const { open } = useModalController()
+  const { currentUser } = useAuth()
+  const isOwner = currentUser?.role === 'owner'
   const cat = categories.find(c => c.id === categoryId)
   if (!cat) return <Navigate to="/catalog" replace />
 
@@ -21,13 +24,15 @@ export default function CategoryPage() {
           <h1 className="text-[25px]">{cat.name}</h1>
           <p className="text-[13px] mt-1" style={{ color: 'var(--ink-soft)' }}>Unit of measure: {cat.unit} · {cat.brands.length} sub-categories</p>
         </div>
-        <button
-          className="text-[12.5px] font-semibold px-3.5 py-2"
-          style={{ border: '1px solid var(--ink)', color: 'var(--ink)' }}
-          onClick={() => open({ type: 'addProduct', categoryId: cat.id, brandId: null })}
-        >
-          + Add product
-        </button>
+        {isOwner && (
+          <button
+            className="text-[12.5px] font-semibold px-3.5 py-2"
+            style={{ border: '1px solid var(--ink)', color: 'var(--ink)' }}
+            onClick={() => open({ type: 'addProduct', categoryId: cat.id, brandId: null })}
+          >
+            + Add product
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {cat.brands.map(b => (

@@ -1,6 +1,7 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { useModalController } from '../state/ModalController'
+import { useAuth } from '../state/AuthContext'
 import { rupee } from '../utils/format'
 import { getStockStatus } from '../utils/stock'
 import ProductThumb from '../components/ProductThumb'
@@ -9,6 +10,8 @@ export default function BrandPage() {
   const { categoryId, brandId } = useParams()
   const { categories } = useInventory()
   const { open } = useModalController()
+  const { currentUser } = useAuth()
+  const isOwner = currentUser?.role === 'owner'
   const cat = categories.find(c => c.id === categoryId)
   const brand = cat?.brands.find(b => b.id === brandId)
   if (!cat || !brand) return <Navigate to="/catalog" replace />
@@ -27,13 +30,15 @@ export default function BrandPage() {
           <h1 className="text-[25px]">{brand.name}</h1>
           <p className="text-[13px] mt-1" style={{ color: 'var(--ink-soft)' }}>{cat.name} · {brand.products.length} products</p>
         </div>
-        <button
-          className="text-[12.5px] font-semibold px-3.5 py-2"
-          style={{ border: '1px solid var(--ink)', color: 'var(--ink)' }}
-          onClick={() => open({ type: 'addProduct', categoryId: cat.id, brandId: brand.id })}
-        >
-          + Add product
-        </button>
+        {isOwner && (
+          <button
+            className="text-[12.5px] font-semibold px-3.5 py-2"
+            style={{ border: '1px solid var(--ink)', color: 'var(--ink)' }}
+            onClick={() => open({ type: 'addProduct', categoryId: cat.id, brandId: brand.id })}
+          >
+            + Add product
+          </button>
+        )}
       </div>
       <div>
         {brand.products.map(p => {
@@ -51,7 +56,7 @@ export default function BrandPage() {
                 </div>
               </div>
               <div className="text-right font-mono text-[12.5px] flex-shrink-0" style={{ color: 'var(--ink-soft)' }}>
-                <b className="block text-[15px]" style={{ color: 'var(--ink)', fontFamily: 'inherit' }}>{rupee(val)}</b>
+                {isOwner && <b className="block text-[15px]" style={{ color: 'var(--ink)', fontFamily: 'inherit' }}>{rupee(val)}</b>}
                 {totalShop} shop · {totalGod} godown
               </div>
             </Link>

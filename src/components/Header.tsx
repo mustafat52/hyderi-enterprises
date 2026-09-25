@@ -19,8 +19,10 @@ const tabs = [
 export default function Header() {
   const { allVariants } = useInventory()
   const { currentUser, logout } = useAuth()
+  const isOwner = currentUser?.role === 'owner'
   const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
   const [summaryOpen, setSummaryOpen] = useState(false)
+  const visibleTabs = isOwner ? tabs : tabs.filter(t => t.label !== 'Reports')
 
   return (
     <>
@@ -35,7 +37,7 @@ export default function Header() {
           </div>
 
           <nav className="hidden md:flex gap-0.5">
-            {tabs.map(t => (
+            {visibleTabs.map(t => (
               <NavLink
                 key={t.to}
                 to={t.to}

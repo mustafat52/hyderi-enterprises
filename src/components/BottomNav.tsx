@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { getStockStatus } from '../utils/stock'
 import { useInventory } from '../state/InventoryContext'
+import { useAuth } from '../state/AuthContext'
 
 const items = [
   {
@@ -37,11 +38,14 @@ const items = [
 
 export default function BottomNav() {
   const { allVariants } = useInventory()
+  const { currentUser } = useAuth()
+  const isOwner = currentUser?.role === 'owner'
+  const visibleItems = isOwner ? items : items.filter(i => i.label !== 'Reports')
   const lowCount = allVariants.filter(v => getStockStatus(v.shop, v.godown, v.limit).status !== 'healthy').length
 
   return (
     <nav className="bottom-nav md:hidden">
-      {items.map(item => (
+      {visibleItems.map(item => (
         <NavLink
           key={item.to}
           to={item.to}

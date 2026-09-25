@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useInventory } from '../state/InventoryContext'
 import { useModalController } from '../state/ModalController'
+import { useAuth } from '../state/AuthContext'
 
 export default function CatalogRoot() {
   const { categories, allVariants } = useInventory()
   const { open } = useModalController()
+  const { currentUser } = useAuth()
+  const isOwner = currentUser?.role === 'owner'
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-7 pb-24 md:pb-16">
@@ -14,13 +17,15 @@ export default function CatalogRoot() {
           <h1 className="text-[25px]">Catalog</h1>
           <p className="text-[13px] mt-1" style={{ color: 'var(--ink-soft)' }}>Every product, organized the way the shop actually thinks about it.</p>
         </div>
-        <button
-          className="text-[12.5px] font-semibold px-3.5 py-2 flex items-center gap-1.5"
-          style={{ border: '1px solid var(--ink)', color: 'var(--ink)' }}
-          onClick={() => open({ type: 'addCategory' })}
-        >
-          + Add category
-        </button>
+        {isOwner && (
+          <button
+            className="text-[12.5px] font-semibold px-3.5 py-2 flex items-center gap-1.5"
+            style={{ border: '1px solid var(--ink)', color: 'var(--ink)' }}
+            onClick={() => open({ type: 'addCategory' })}
+          >
+            + Add category
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
         {categories.map(c => {
