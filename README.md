@@ -43,7 +43,7 @@ It will then launch full-screen, without browser chrome, like a native app, and 
 - **Sale** — stock going out to a customer: multi-item, each line independently sourced from Shop or Godown.
 - **Move** — Godown ↔ Shop, one direction per slip, multiple items.
 - **Alerts** — reorder limits are checked against **Shop stock only** (Godown stock doesn't help a customer at the counter), split into "can move from Godown" vs. "needs purchase."
-- **Reports** — owner-only: stock value by category, Shop vs Godown split, a selectable-period Stock In vs Stock Out summary, and fast/slow movers computed from real sale history.
+- **Reports** — owner-only: stock value by category, Shop vs Godown split, a selectable-period Stock In vs Stock Out summary, and fast/slow movers computed from real sale history..
 - **Stock log** — full audit trail of every purchase, sale, move, adjustment, and new item added, with timestamp. Filterable by type.
 - **Roles** — 4 owner logins and 1 employee login. Employees get the full daily-use workflow (Purchase/Sale/Move/Alerts) without stock-value figures, Reports, or catalog editing.
 
